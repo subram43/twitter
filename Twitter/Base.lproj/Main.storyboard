@@ -116,6 +116,7 @@
                                 <action selector="onLogout:" destination="acd-Ot-35I" id="cmA-a0-7jY"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" image="Twitter_Logo_Blue" id="FA3-ni-x1l"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7x1-u9-rH2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -145,4 +146,7 @@
             <point key="canvasLocation" x="658" y="-13"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Twitter_Logo_Blue" width="133.33332824707031" height="133.33332824707031"/>
+    </resources>
 </document>
