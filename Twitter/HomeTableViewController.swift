@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AlamofireImage
 
 class HomeTableViewController: UITableViewController {
 
@@ -14,17 +15,24 @@ class HomeTableViewController: UITableViewController {
     var tweetArray = [NSDictionary]()
     var numberOfTweet: Int!
     
+    let myRefreshControl = UIRefreshControl()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadTweet()
+    
+        myRefreshControl.addTarget(self, action: #selector(loadTweet), for: .valueChanged)
+        tableView.refreshControl = myRefreshControl
 
     }
     
-    func loadTweet() {
+    @objc func loadTweet() {
+        
+        numberOfTweet = 20
         
         let myUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
-        let myParams = ["count": 11]
+        let myParams = ["count": numberOfTweet]
         
         TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: myParams, success: { (tweets: [NSDictionary]) in
             
@@ -34,10 +42,37 @@ class HomeTableViewController: UITableViewController {
             }
             
             self.tableView.reloadData()
+            self.myRefreshControl.endRefreshing()
             
         }, failure: { (Error) in
             print("Could not retrieve tweets! oh no!!")
         })
+    }
+    
+    func loadMoreTweets() {
+        let myUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+        numberOfTweet = numberOfTweet + 20
+        let myParams = ["count": numberOfTweet]
+
+        TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: myParams, success: { (tweets: [NSDictionary]) in
+
+            self.tweetArray.removeAll()
+            for tweet in tweets {
+                self.tweetArray.append(tweet)
+            }
+
+            self.tableView.reloadData()
+
+        }, failure: { (Error) in
+            print("Could not retrieve tweets! oh no!!")
+        })
+
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == tweetArray.count {
+            loadMoreTweets()
+        }
     }
     
     
@@ -57,7 +92,7 @@ class HomeTableViewController: UITableViewController {
         
         let imageUrl = URL(string: (user["profile_image_url_https"] as? String)!)
         let data = try? Data(contentsOf: imageUrl!)
-        
+
         if let imageData = data {
             cell.profileImageView.image = UIImage(data: imageData)
         }
@@ -103,7 +138,7 @@ class HomeTableViewController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
     */
 
