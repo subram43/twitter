@@ -11,6 +11,7 @@ import AlamofireImage
 
 class HomeTableViewController: UITableViewController {
 
+    @IBOutlet var tweetTable: UITableView!
     
     var tweetArray = [NSDictionary]()
     var numberOfTweet: Int!
@@ -20,11 +21,18 @@ class HomeTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadTweet()
+        self.loadTweet()
+        self.tweetTable.rowHeight = UITableView.automaticDimension
+        self.tweetTable.estimatedRowHeight = 150
     
-        myRefreshControl.addTarget(self, action: #selector(loadTweet), for: .valueChanged)
-        tableView.refreshControl = myRefreshControl
+//        myRefreshControl.addTarget(self, action: #selector(loadTweet), for: .valueChanged)
+//        tableView.refreshControl = myRefreshControl
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.loadTweet()
     }
     
     @objc func loadTweet() {
@@ -42,7 +50,7 @@ class HomeTableViewController: UITableViewController {
             }
             
             self.tableView.reloadData()
-            self.myRefreshControl.endRefreshing()
+//            self.myRefreshControl.endRefreshing()
             
         }, failure: { (Error) in
             print(Error)
@@ -97,6 +105,10 @@ class HomeTableViewController: UITableViewController {
         if let imageData = data {
             cell.profileImageView.image = UIImage(data: imageData)
         }
+        
+        cell.setFavorited(isFavorited: tweetArray[indexPath.row]["favorited"] as! Bool)
+        cell.tweetId = tweetArray[indexPath.row]["id"] as! Int
+        cell.setRetweeted(tweetArray[indexPath.row]["retweeted"] as! Bool)
         
         return cell
     }
